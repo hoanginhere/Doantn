@@ -1,0 +1,6 @@
+var eventSource = new EventSource('/sse-example/');
+
+eventSource.onmessage = function(event) {
+    console.log(event.data);
+    // Xử lý dữ liệu nhận được tại đây
+};

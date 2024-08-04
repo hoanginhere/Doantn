@@ -1,0 +1,57 @@
+<!-- Tệp mẫu 'chart.html' -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ sensor.name }} Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>{{ sensor.name }} Chart</h1>
+    <canvas id="chart"></canvas>
+
+    <script>
+        var data = JSON.parse('{{ data|safe }}');
+        var timestamps = data.map(item => item.timestamp);
+        var values = data.map(item => item.value);
+
+        var ctx = document.getElementById('chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: timestamps,
+                datasets: [{
+                    label: 'Value',
+                    data: values,
+                    backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'second',
+                            displayFormats: {
+                                second: 'h:mm:ss a'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Timestamp'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

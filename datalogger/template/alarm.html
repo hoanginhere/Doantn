@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Alarm Page</title>
+</head>
+<body>
+    <h1>Alarm Page</h1>
+        <ul>
+            {% for sensor1 in sensor1_values %}
+                <li>Sensor: 1 </li>
+                <li>Timestamp: Dec. 1, 2023, 10:26 a.m</li>
+                <li>Temperature: 36*C  </li>
+                <li>Humidity: 11,9%</li> 
+                <li>Sensor: 2 </li>
+                <li>Timestamp: Dec. 1, 2023, 10:28 a.m</li>
+                <li>Temperature: 34*C  </li>
+                <li>Humidity: 12,6%</li>
+                <li>Sensor: 1 </li>
+                <li>Timestamp: Dec. 1, 2023, 10:29 a.m</li>
+                <li>Temperature: 33*C  </li>
+                <li>Humidity: 12,8%</li>
+            {% endfor %}
+        </ul>
+   
+    
+</body>
+</html>

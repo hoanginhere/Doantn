@@ -1,0 +1,20 @@
+<style>
+.button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+    </style>
+<form method="post" enctype="multipart/form-data" action="{% url 'upload_firmware' %}">
+    {% csrf_token %}
+    <input type="file" name="firmware">
+    <button type="submit">Upload</button>
+</form>

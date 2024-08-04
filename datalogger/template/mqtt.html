@@ -1,0 +1,21 @@
+<!-- mqtt_template.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT Data</title>
+</head>
+<body>
+    <h1>Real-time MQTT Data</h1>
+    <div id="mqtt-data"></div>
+
+    <script>
+        var socket = new WebSocket('ws://' + window.location.host + '/ws/mqtt/');
+
+        socket.onmessage = function(e) {
+            var data = e.data;
+            document.getElementById('mqtt-data').innerHTML = data;
+        };
+    </script>
+</body>
+</html>

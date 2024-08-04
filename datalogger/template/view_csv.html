@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ file_name }}</title>
+</head>
+<body>
+    <h1>{{ file_name }}</h1>
+    <table>
+        <thead>
+            <tr>
+                {% for header in csv_data.0 %}
+                    <th>{{ header }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in csv_data|slice:"1:" %}
+                <tr>
+                    {% for column in row %}
+                        <td>{{ column }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

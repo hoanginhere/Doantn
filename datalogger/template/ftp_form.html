@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            padding: 20px;
+        }
+
+        /* Container styles */
+        .container {
+            max-width: 100%;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header styles */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 20px;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-group input[type="submit"] {
+            background-color: #444;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .form-group input[type="submit"]:hover {
+            background-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+    <form method="post" action="{% url 'ftp_form' %}">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required>
+    </div>
+    <div class="form-group">
+        <label for="factory">Factory:</label>
+        <input type="text" id="factory" name="factory" required>
+    </div>
+    <div class="form-group">
+        <label for="station">Station:</label>
+        <input type="text" id="station" name="station" required>
+    </div>
+    <div class="form-group">
+        <label for="ftp_host">FTP Host:</label>
+        <input type="text" id="ftp_host" name="ftp_host" required>
+    </div>
+    <div class="form-group">
+        <label for="ftp_username">Username:</label>
+        <input type="text" id="ftp_username" name="ftp_username" required>
+    </div>
+    <div class="form-group">
+        <label for="ftp_password">Password:</label>
+        <input type="password" id="ftp_password" name="ftp_password" required>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Submit">
+    </div>
+</form>
+
+    </div>
+</body>
+</html>

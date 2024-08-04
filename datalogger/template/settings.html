@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cài đặt cảm biến</title>
+    <style>
+        .sensor-settings, .rs485-settings, .digital-settings {
+            display: none;
+        }
+        .button-container {
+            margin-top: 20px; /* Khoảng cách giữa các nút */
+        }
+        .button-container button {
+            display: inline-block;
+            margin-right: 10px; /* Khoảng cách giữa các nút */
+            padding: 10px 20px; /* Độ lớn của nút */
+            font-size: 16px; /* Cỡ chữ của nút */
+            background-color: #007bff; /* Màu nền của nút */
+            color: #fff; /* Màu chữ của nút */
+            border: none;
+            cursor: pointer;
+        }
+        .button-container button:hover {
+            background-color: #0056b3; /* Màu nền của nút khi rê chuột vào */
+        }
+    </style>
+    <script>
+        function showForm(formClass) {
+            document.querySelector('.sensor-settings').style.display = 'none';
+            document.querySelector('.rs485-settings').style.display = 'none';
+            document.querySelector('.digital-settings').style.display = 'none';
+            document.querySelector('.' + formClass).style.display = 'block';
+        }
+
+        function submitForm(formClass) {
+            // Thiết lập sensor_type dựa trên form class
+            let sensorTypeInput = document.querySelector('input[name="sensor_type"]');
+            if (formClass === 'sensor-settings') {
+                sensorTypeInput.value = 'regular';
+            } else if (formClass === 'rs485-settings') {
+                sensorTypeInput.value = 'rs485';
+            } else if (formClass === 'digital-settings') {
+                sensorTypeInput.value = 'digital';
+            }
+
+            // Kích hoạt chỉ các input của form hiện tại
+            document.querySelectorAll('form > div').forEach(function(div) {
+                if (!div.classList.contains(formClass)) {
+                    div.querySelectorAll('input').forEach(function(input) {
+                        input.disabled = true;
+                    });
+                } else {
+                    div.querySelectorAll('input').forEach(function(input) {
+                        input.disabled = false;
+                    });
+                }
+            });
+
+            // Gửi form
+            document.querySelector('form').submit();
+        }
+    </script>
+</head>
+<body>
+    <h1>Cài đặt cảm biến</h1>
+
+    <button type="button" onclick="showForm('sensor-settings')">Analog Input Config</button>
+    <button type="button" onclick="showForm('rs485-settings')">RS485 Input Config</button>
+    <button type="button" onclick="showForm('digital-settings')">Digital I/O Config</button>
+
+    <form method="post" action="{% url 'settings' %}">
+        {% csrf_token %}
+        <input type="hidden" name="sensor_type" value="">
+
+        <div class="sensor-settings">
+            <h2>Analog Sensor</h2>
+            <label for="port">Port:</label>
+            <input type="text" id="port" name="port" required>
+
+            <label for="sensor_name">Tên cảm biến:</label>
+            <input type="text" id="sensor_name" name="sensor_name" required>
+
+            <label for="sensor_unit">Đơn vị:</label>
+            <input type="text" id="sensor_unit" name="sensor_unit" required>
+
+            <label for="sensor_min_value">Giá trị tối thiểu:</label>
+            <input type="number" id="sensor_min_value" name="sensor_min_value" step="0.01" required>
+
+            <label for="sensor_max_value">Giá trị tối đa:</label>
+            <input type="number" id="sensor_max_value" name="sensor_max_value" step="0.01" required>
+
+            <label for="sensor_min_alarm">Ngưỡng báo động tối thiểu:</label>
+            <input type="number" id="sensor_min_alarm" name="sensor_min_alarm" step="0.01" required>
+
+            <label for="sensor_max_alarm">Ngưỡng báo động tối đa:</label>
+            <input type="number" id="sensor_max_alarm" name="sensor_max_alarm" step="0.01" required>
+
+            <button type="button" onclick="submitForm('sensor-settings')">Lưu cài đặt</button>
+        </div>
+
+        <div class="rs485-settings">
+            <h2>RS485 Sensor</h2>
+            <label for="rs485_name">Tên cảm biến:</label>
+            <input type="text" id="rs485_name" name="rs485_name" required>
+
+            <label for="rs485_baudrate">Baudrate:</label>
+            <input type="number" id="rs485_baudrate" name="rs485_baudrate" required>
+
+            <label for="rs485_port">Port:</label>
+            <input type="text" id="rs485_port" name="rs485_port" required>
+
+            <label for="rs485_id">ID:</label>
+            <input type="number" id="rs485_id" name="rs485_id" required>
+
+            <label for="rs485_address">Address:</label>
+            <input type="number" id="rs485_address" name="rs485_address" required>
+
+            <label for="rs485_type">Type:</label>
+            <input type="text" id="rs485_type" name="rs485_type" required>
+
+            <label for="rs485_min_alarm">Ngưỡng báo động tối thiểu:</label>
+            <input type="number" id="rs485_min_alarm" name="rs485_min_alarm" step="0.01" required>
+
+            <label for="rs485_max_alarm">Ngưỡng báo động tối đa:</label>
+            <input type="number" id="rs485_max_alarm" name="rs485_max_alarm" step="0.01" required>
+
+            <button type="button" onclick="submitForm('rs485-settings')">Lưu cài đặt</button>
+        </div>
+
+        <div class="digital-settings">
+            <h2>Digital Sensor</h2>
+            <label for="digital_name">Tên cảm biến:</label>
+            <input type="text" id="digital_name" name="digital_name" required>
+
+            <label for="digital_unit">Đơn vị:</label>
+            <input type="text" id="digital_unit" name="digital_unit" required>
+
+            <label for="digital_gpio">GPIO:</label>
+            <input type="number" id="digital_gpio" name="digital_gpio" required>
+
+            <label for="digital_min_alarm">Ngưỡng báo động tối thiểu:</label>
+            <input type="number" id="digital_min_alarm" name="digital_min_alarm" step="0.01" required>
+
+            <label for="digital_max_alarm">Ngưỡng báo động tối đa:</label>
+            <input type="number" id="digital_max_alarm" name="digital_max_alarm" step="0.01" required>
+
+            <label for="digital_status">Status:</label>
+            <input type="text" id="digital_status" name="digital_status" required>
+
+            <button type="button" onclick="submitForm('digital-settings')">Lưu cài đặt</button>
+        </div>
+    </form>
+</body>
+</html>

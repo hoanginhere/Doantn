@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataLogger Control Panel</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 20px;
+}
+
+/* Container styles */
+.container {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.button-container button {
+    margin: 0 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s;
+}
+.button-container button:hover {
+    background-color: #0056b3;
+}
+
+.chart-container {
+    width: 100%;
+    margin-bottom: 40px;
+}
+.chart-container.hide {
+    display: none;
+}
+
+/* Floating Panel styles */
+.floating-panel {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 1200px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Header styles */
+header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    font-size: 24px;
+    border-bottom: 2px solid #0056b3;
+}
+
+/* Tabs styles */
+.tab-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.tab {
+    flex-basis: 20%;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab button {
+    text-align: left;
+    padding: 14px 16px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 17px;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.tab button i {
+    margin-right: 8px;
+}
+
+.tab button:hover {
+    background-color: #e2e6ea;
+}
+
+.tab button.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.tabcontent {
+    flex-basis: 80%;
+    padding: 20px;
+    border-left: 1px solid #ddd;
+    color: #333;
+    background-color: #ffffff;
+}
+
+.sensor-box {
+    border: 2px solid #c8102e;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    width: calc(25% - 20px);
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+.sensor-box h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.0em;
+    color: #000;
+    font-weight: bold;
+}
+
+.sensor-box p {
+    margin: 10px 0;
+    font-size: 1.1em;
+    color: #000;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #444;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var notificationElement = document.getElementById('notification');
+            if (notificationElement) {
+                notificationElement.style.display = 'block';
+                setTimeout(function() {
+                    notificationElement.style.display = 'none';
+                }, 5000); // 5 seconds
+            }
+
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                    tabcontent[i].classList.remove("active");
+                }
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.className += " active";
+                document.getElementById(tabName).classList.add("active");
+            }
+
+            var tabButtons = document.querySelectorAll('.tab button');
+            tabButtons.forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    openTab(event, event.target.dataset.tab);
+                });
+            });
+
+            // Auto-open the first tab
+            if (tabButtons.length > 0) {
+                tabButtons[0].click();
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>DataLogger Control Panel</header>
+    <div class="container">
+        <div class="tab-container">
+            <div class="tab">
+            <button class="tablinks active" data-tab="value"><i class="fas fa-chart-bar"></i> Value</button>
+            <button class="tablinks" data-tab="config-port"><i class="fas fa-plug"></i> Config Port</button>
+            <button class="tablinks" data-tab="config-device"><i class="fas fa-cogs"></i> Config Device</button>
+            <button class="tablinks" data-tab="ftp-form"><i class="fas fa-server"></i> FTP Setting</button>
+            <button class="tablinks" data-tab="schedule-form"><i class="fas fa-calendar-alt"></i> Schedule Port</button>
+            <button class="tablinks" data-tab="querry"><i class="fas fa-database"></i> Query Data</button>
+            <button class="tablinks" data-tab="view-csv"><i class="fas fa-file-csv"></i> View CSV</button>
+            <button class="tablinks" data-tab="graph"><i class="fas fa-chart-line"></i> Graph</button> 
+            <button class="tablinks" data-tab="upload"><i class="fas fa-upload"></i> Upload Firmware</button>
+            <button class="tablinks" data-tab="error"><i class="fas fa-exclamation-triangle"></i> Log Error</button>
+            <a href="{% url 'logout' %}" class="button"><i class="fas fa-sign-out-alt"></i> Log out</a>
+
+            </div>
+            <div class="tabcontent active" id="value">
+                <h2>Value</h2>
+                {% include 'value.html' %}
+            </div>
+            <div class="tabcontent" id="config-port">
+                <h2>Config Port</h2>
+                {% include 'settings.html' %}
+            </div>
+            <div class="tabcontent" id="config-device">
+                <h2>Config Device</h2>
+                {% include 'device.html' %}
+            </div>
+            <div class="tabcontent" id="ftp-form">
+                <h2>FTP Setting</h2>
+                {% include 'ftp_form.html' %}
+            </div>
+            <div class="tabcontent" id="schedule-form">
+                <h2>Schedule Port</h2>
+                {% include 'schedule.html' %}
+            </div>
+            <div class="tabcontent" id="upload">
+                <h2>Upload_Firmware</h2>
+                {% include 'upload_firmware.html' %}
+            </div>
+            <div class="tabcontent" id="querry">
+                <h2>Query Data</h2>
+                {% include 'query.html' %}
+            </div>
+            <div class="tabcontent" id="view-csv">
+                <h2>View CSV</h2>
+                {% include 'csv_list.html' %}
+            </div>
+            <div class="tabcontent" id="error">
+                <h2>Log Error</h2>
+                {% include 'error.html' %}
+            </div>
+
+            <div class="tabcontent" id="graph"> <!-- Thêm tab Graph -->
+                <h2>Graph</h2>
+                <!-- Thêm các phần tử canvas cho biểu đồ -->
+                <div class="button-container">
+                <button data-chart="myChart1">Port 1</button>
+                <button data-chart="myChart2">Port 2</button>
+                <button data-chart="myChart3">Port 3</button>
+                <button data-chart="myChart4">Port 4</button>
+                <button data-chart="myChart5">Port 5</button>
+                <button data-chart="myChart6">Port 6</button>
+                <button data-chart="myChart7">Port 7</button>
+                <button data-chart="myChart8">Port 8</button>
+                <button data-chart="myChart9">Port 9</button>
+
+        </div>
+                <div class="chart-container" id="container-myChart1">
+                    <canvas id="myChart1"></canvas>
+                </div>
+                <div class="chart-container" id="container-myChart2" style="display: block;">
+                    <canvas id="myChart2"></canvas>
+                </div>
+                <div class="chart-container" id="container-myChart3" style="display: block;">
+                    <canvas id="myChart3"></canvas>
+                </div>
+                <div class="chart-container" id="container-myChart4" style="display: block;">
+                    <canvas id="myChart4"></canvas>
+                </div>
+                <div class="chart-container" id="container-myChart5" style="display: block;">
+                    <canvas id="myChart5"></canvas>
+                </div>
+                <div class="chart-container" id="container-myChart6" style="display: block;">
+                    <canvas id="myChart6"></canvas>
+                </div>
+                <div class="chart-container" id="container-myChart7" style="display: block;">
+                    <canvas id="myChart7"></canvas>
+                </div>
+                <div class="chart-container" id="container-myChart8" style="display: block;">
+                    <canvas id="myChart8"></canvas>
+                </div>
+                <div class="chart-container" id="container-myChart9" style="display: block;">
+                    <canvas id="myChart9"></canvas>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div id="current-time" style="position: absolute; top: 20px; right: 20px; font-size: 16px; font-weight: bold;"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var notificationElement = document.getElementById('notification');
+            if (notificationElement) {
+                notificationElement.style.display = 'block';
+                setTimeout(function() {
+                    notificationElement.style.display = 'none';
+                }, 5000); // 5 seconds
+            }
+
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                    tabcontent[i].classList.remove("active");
+                }
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.className += " active";
+                document.getElementById(tabName).classList.add("active");
+
+                // Khởi tạo hoặc cập nhật biểu đồ khi chuyển đổi tab
+                if (tabName === 'graph') {
+                    fetchDataAndUpdateCharts();
+                }
+            }
+
+            var tabButtons = document.querySelectorAll('.tab button');
+            tabButtons.forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    openTab(event, event.target.dataset.tab);
+                });
+            });
+
+            // Auto-open the first tab
+            if (tabButtons.length > 0) {
+                tabButtons[0].click();
+            }
+        });
+
+        function updateTime() {
+            var currentTime = new Date().toLocaleString();
+            document.getElementById("current-time").textContent = currentTime;
+        }
+
+        setInterval(updateTime, 1000); // Cập nhật thời gian mỗi giây
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateInterface() {
+                // Gọi endpoint để kiểm tra tin nhắn MQTT mới
+                fetch('/mqtt_alarm/')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Kiểm tra nếu có tin nhắn từ MQTT
+                        if (data && data.message) {
+                            // Hiển thị thông báo hoặc thực hiện hành động phù hợp với ứng dụng của bạn
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            // Cập nhật giao diện mỗi 30 giây
+            setInterval(updateInterface, 30000);
+        });
+    </script>
+    <script>
+        const charts = {};
+
+        function createChart(ctx, labels, data, label) {
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'second',
+                                reverse: false,
+                            },
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Thời gian'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 50,
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Giá trị cảm biến'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: label
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeCharts(data) {
+            const sensors = [
+                { id: 'myChart1', labels: data.sensor1_labels, values: data.sensor1_values, label: 'Giá trị cảm biến  '+ data.sensor1_name},
+                { id: 'myChart2', labels: data.sensor2_labels, values: data.sensor2_values, label: 'Giá trị cảm biến  '+ data.sensor2_name},
+                { id: 'myChart3', labels: data.sensor3_labels, values: data.sensor3_values, label: 'Giá trị cảm biến  ' +data.sensor3_name},
+                { id: 'myChart4', labels: data.sensor4_labels, values: data.sensor4_values, label: 'Giá trị cảm biến  ' +data.sensor4_name},
+                { id: 'myChart5', labels: data.sensor5_labels, values: data.sensor5_values, label: 'Giá trị cảm biến  ' +data.sensor5_name},
+                { id: 'myChart6', labels: data.sensor6_labels, values: data.sensor6_values, label: 'Giá trị cảm biến  '+data.sensor6_name },
+                { id: 'myChart7', labels: data.sensor7_labels, values: data.sensor7_values, label: 'Giá trị cảm biến  '+data.sensor7_name },
+                { id: 'myChart8', labels: data.sensor8_labels, values: data.sensor8_values, label: 'Giá trị cảm biến  '+data.sensor8_name },
+                { id: 'myChart9', labels: data.sensor9_labels, values: data.sensor9_values, label: 'Giá trị cảm biến  ' +data.sensor9_name}
+
+            ];
+
+            sensors.forEach(sensor => {
+                const ctx = document.getElementById(sensor.id).getContext('2d');
+                charts[sensor.id] = createChart(ctx, sensor.labels, sensor.values, sensor.label);
+            });
+
+            document.querySelectorAll('.button-container button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const chartId = this.getAttribute('data-chart');
+                    document.querySelectorAll('.chart-container').forEach(container => {
+                        container.style.display = 'none';
+                    });
+                    document.getElementById('container-' + chartId).style.display = 'block';
+                });
+            });
+
+            document.getElementById('container-myChart1').style.display = 'block';
+        }
+
+        function fetchDataAndUpdateCharts() {
+            $.ajax({
+                url: '{% url "fetch_sensor_data" %}',
+                method: 'GET',
+                success: function(data) {
+                    if (!Object.keys(charts).length) {
+                        // If charts are not initialized yet, initialize them
+                        initializeCharts(data);
+                    } else {
+                        // Update existing charts
+                        Object.keys(data).forEach(key => {
+                            const chartId = key.replace('_labels', '');
+                            if (charts[chartId]) {
+                                charts[chartId].data.labels = data[`${chartId}_labels`];
+                                charts[chartId].data.datasets[0].data = data[`${chartId}_values`];
+                                charts[chartId].update();
+                            }
+                        });
+                    }
+                },
+                error: function(error) {
+                    console.error('Error fetching sensor data:', error);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch data and initialize charts when the graph tab is clicked
+            document.querySelector('button[data-tab="graph"]').addEventListener('click', fetchDataAndUpdateCharts);
+
+            // Update data every 5 seconds
+            setInterval(fetchDataAndUpdateCharts, 5000);
+        });
+    </script>
+</body>
+</html>

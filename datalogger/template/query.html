@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Data</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        select,
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .animation {
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <form action="{% url 'query_results' %}" method="GET">
+            <label for="table">Select Sensor:</label>
+            <select id="table" name="table">
+                <option value="Sensor1">Sensor 1</option>
+                <option value="Sensor2">Sensor 2</option>
+                <option value="Sensor3">Sensor 3</option>
+                <option value="Sensor4">Sensor 4</option>
+                <option value="Sensor5">Sensor 5</option>
+                <option value="Sensor6">Sensor 6</option>
+                <option value="Sensor7">Sensor 7</option>
+                <option value="Sensor8">Sensor 8</option>
+            </select>
+
+            <label for="start_time">Start Time:</label>
+            <input type="datetime-local" id="start_time" name="start_time" required>
+
+            <label for="end_time">End Time:</label>
+            <input type="datetime-local" id="end_time" name="end_time" required>
+
+            <button type="submit">Query</button>
+        </form>
+
+        
+    </div>
+</body>
+</html>

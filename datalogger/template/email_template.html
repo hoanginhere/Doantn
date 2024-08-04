@@ -1,0 +1,14 @@
+<form action="{% url 'send_email' %}" method="post">
+    {% csrf_token %}
+    <label for="recipient_email">Địa chỉ email người nhận:</label>
+    <input type="email" name="recipient_email" id="recipient_email" required>
+    <br>
+    <label for="csv_list">Danh sách file CSV:</label>
+    <select name="csv_files" id="csv_list" multiple>
+        {% for csv_file in csv_files %}
+            <option value="{{ csv_file }}">{{ csv_file }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <input type="submit" value="Gửi Email">
+</form>

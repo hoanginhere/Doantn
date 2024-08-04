@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .card-category {
+        margin-top: 10px;
+    }
+    .card-title {
+        margin-bottom: 0;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+                <div class="card-header card-header-warning card-header-icon">
+                    <div class="card-icon">
+                        <i class="material-icons">content_copy</i>
+                    </div>
+                    <p class="card-category">Input1</p>
+                    <h3 class="card-title">49/50 <small>GB</small></h3>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <i class="material-icons text-danger">warning</i>
+                        <a href="#pablo">Get More Space...</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Repeat similar blocks for other inputs (Input2, Input3, etc.) -->
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header card-header-tabs card-header-primary">
+                    <div class="nav-tabs-navigation">
+                        <div class="nav-tabs-wrapper">
+                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#profile" data-toggle="tab">
+                                        <i class="material-icons">bug_report</i> Bugs
+                                        <div class="ripple-container"></div>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#messages" data-toggle="tab">
+                                        <i class="material-icons">code</i> Website
+                                        <div class="ripple-container"></div>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#settings" data-toggle="tab">
+                                        <i class="material-icons">cloud</i> Server
+                                        <div class="ripple-container"></div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="profile">
+                            <table class="table">
+                                <tbody>
+                                    <!-- Add your tasks here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Repeat similar blocks for other tabs (messages, settings) -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Repeat for another column if needed -->
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+        // Initialize charts or other JavaScript functions if needed
+    });
+</script>
+{% endblock javascripts %}

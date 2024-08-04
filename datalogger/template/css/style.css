@@ -1,0 +1,67 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #c8102e;
+    color: white;
+    padding: 20px 0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-content img {
+    width: 80px;
+    margin-right: 20px;
+}
+
+.header-content h1 {
+    font-size: 2em;
+    margin: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.sensor-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.sensor-box {
+    border: 2px solid #c8102e;
+    border-radius: 5px;
+    padding: 20px;
+    width: 220px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 0 10px;
+}
+
+.sensor-box h3 {
+    margin: 0 0 20px;
+    font-size: 1.5em;
+    color: #c8102e;
+}
+
+.sensor-box p {
+    margin: 10px 0;
+    font-size: 1.1em;
+}
+
+.fa-clock,
+.fa-thermometer-half,
+.fa-tint {
+    margin-right: 10px;
+}

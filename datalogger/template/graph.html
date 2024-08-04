@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Biểu đồ thời gian thực cảm biến</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .button-container button {
+            margin: 0 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .chart-container {
+            width: 100%;
+            margin-bottom: 40px;
+        }
+        .chart-container.hide {
+            display: none;
+        }
+        canvas {
+            max-width: 100%;
+            height: 20vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Biểu đồ thời gian thực cảm biến</h1>
+        <div class="button-container">
+            <button data-chart="myChart1">Cảm biến 1</button>
+            <button data-chart="myChart2">Cảm biến 2</button>
+            <button data-chart="myChart3">Cảm biến 3</button>
+            <button data-chart="myChart4">Cảm biến 4</button>
+            <button data-chart="myChart5">Cảm biến 5</button>
+            <button data-chart="myChart6">Cảm biến 6</button>
+            <button data-chart="myChart7">Cảm biến 7</button>
+            <button data-chart="myChart8">Cảm biến 8</button>
+            <button data-chart="myChart9">Cảm biến 9</button>
+
+        </div>
+        <div class="chart-container" id="container-myChart1"><canvas id="myChart1"></canvas></div>
+        <div class="chart-container" id="container-myChart2"><canvas id="myChart2"></canvas></div>
+        <div class="chart-container" id="container-myChart3"><canvas id="myChart3"></canvas></div>
+        <div class="chart-container" id="container-myChart4"><canvas id="myChart4"></canvas></div>
+        <div class="chart-container" id="container-myChart5"><canvas id="myChart5"></canvas></div>
+        <div class="chart-container" id="container-myChart6"><canvas id="myChart6"></canvas></div>
+        <div class="chart-container" id="container-myChart7"><canvas id="myChart7"></canvas></div>
+        <div class="chart-container" id="container-myChart8"><canvas id="myChart8"></canvas></div>
+        <div class="chart-container" id="container-myChart9"><canvas id="myChart9"></canvas></div>
+
+    </div>
+
+    <script>
+        const charts = {};
+
+        function createChart(ctx, labels, data, label) {
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'second'
+                            },
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Thời gian'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            display: true,
+                            min : 0,
+                            max: 50,
+                            title: {
+                                display: true,
+                                text: 'Giá trị cảm biến'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: label
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeCharts(data) {
+            const sensors = [
+                { id: 'myChart1', labels: data.sensor1_labels, values: data.sensor1_values, label: 'Giá trị cảm biến  '+ data.sensor1_name},
+                { id: 'myChart2', labels: data.sensor2_labels, values: data.sensor2_values, label: 'Giá trị cảm biến  '+ data.sensor2_name},
+                { id: 'myChart3', labels: data.sensor3_labels, values: data.sensor3_values, label: 'Giá trị cảm biến  ' +data.sensor3_name},
+                { id: 'myChart4', labels: data.sensor4_labels, values: data.sensor4_values, label: 'Giá trị cảm biến  ' +data.sensor4_name},
+                { id: 'myChart5', labels: data.sensor5_labels, values: data.sensor5_values, label: 'Giá trị cảm biến  ' +data.sensor5_name},
+                { id: 'myChart6', labels: data.sensor6_labels, values: data.sensor6_values, label: 'Giá trị cảm biến  '+data.sensor6_name },
+                { id: 'myChart7', labels: data.sensor7_labels, values: data.sensor7_values, label: 'Giá trị cảm biến  '+data.sensor7_name },
+                { id: 'myChart8', labels: data.sensor8_labels, values: data.sensor8_values, label: 'Giá trị cảm biến  '+data.sensor8_name },
+                { id: 'myChart9', labels: data.sensor9_labels, values: data.sensor9_values, label: 'Giá trị cảm biến  ' +data.sensor9_name}
+
+            ];
+
+            sensors.forEach(sensor => {
+                const ctx = document.getElementById(sensor.id).getContext('2d');
+                charts[sensor.id] = createChart(ctx, sensor.labels, sensor.values, sensor.label);
+            });
+
+            document.querySelectorAll('.button-container button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const chartId = this.getAttribute('data-chart');
+                    document.querySelectorAll('.chart-container').forEach(container => {
+                        container.style.display = 'none';
+                    });
+                    document.getElementById('container-' + chartId).style.display = 'block';
+                });
+            });
+
+            document.getElementById('container-myChart2').style.display = 'block';
+        }
+
+        function fetchDataAndUpdateCharts() {
+            $.ajax({
+                url: '{% url "fetch_sensor_data" %}',
+                method: 'GET',
+                success: function(data) {
+                    if (!Object.keys(charts).length) {
+                        // If charts are not initialized yet, initialize them
+                        initializeCharts(data);
+                    } else {
+                        // Update existing charts
+                        Object.keys(data).forEach(key => {
+                            const chartId = key.replace('_labels', '');
+                            if (charts[chartId]) {
+                                charts[chartId].data.labels = data[`${chartId}_labels`];
+                                charts[chartId].data.datasets[0].data = data[`${chartId}_values`];
+                                charts[chartId].update();
+                            }
+                        });
+                    }
+                },
+                error: function(error) {
+                    console.error('Error fetching sensor data:', error);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchDataAndUpdateCharts(); // Fetch data and initialize charts on page load
+
+            // Cập nhật dữ liệu mỗi 5 giây
+            setInterval(fetchDataAndUpdateCharts, 1000);
+        });
+    </script>
+</body>
+</html>
